@@ -164,9 +164,7 @@ export default ProfileScreen = ({ navigation }) => {
                       size={18}
                       color="#BDBDBD"
                       onPress={() => {
-                        navigation.navigate('CommentsScreen', {
-                          postId: item.id,
-                        });
+                        navigation.navigate('CommentsScreen');
                       }}
                     />
                   </View>

@@ -20,11 +20,62 @@ import { Feather } from '@expo/vector-icons';
 // import { db } from '../../../firebase/config';
 
 export default CommentsScreen = ({ route }) => {
+  // const [posts, setPosts] = useState([
+  //   {
+  //     id: 1,
+  //     photo: require('../../../assets/images/postImg.png'),
+  //     photoName: 'Лес',
+  //     photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
+  //   },
+  //   {
+  //     id: 2,
+  //     photo: require('../../../assets/images/postImg.png'),
+  //     photoName: 'Лес',
+  //     photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
+  //   },
+  //   {
+  //     id: 3,
+  //     photo: require('../../../assets/images/postImg.png'),
+  //     photoName: 'Лес',
+  //     photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
+  //   },
+  // ]);
+
+  // const avatar = require('../../../assets/images/avatar.png');
+  // const email = 'email@example.com';
+  const nickName = 'Natali Romanova';
   const [comment, setComment] = useState('');
-  const [sendedComment, setSendedComment] = useState('');
-  const [allComments, setAllComments] = useState([]);
+  // const [sendedComment, setSendedComment] = useState('');
+  const [allComments, setAllComments] = useState([
+    {
+      id: 1,
+      nickName: 'John',
+      avatar: require('../../../assets/images/postImg.png'),
+      text: 'Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!',
+      date: '09 июня, 2020 | 08:40',
+      isAuthor: false,
+    },
+    {
+      id: 2,
+      nickName: 'Natali Romanova',
+      avatar: require('../../../assets/images/avatar.png'),
+      text: 'A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.',
+      date: '09 июня, 2020 | 09:14',
+      isAuthor: true,
+    },
+    {
+      id: 3,
+      nickName: 'John',
+      avatar: require('../../../assets/images/postImg.png'),
+      text: 'Thank you! That was very helpful!',
+      date: '09 июня, 2020 | 09:20',
+      isAuthor: false,
+    },
+  ]);
   // const { nickName, photo } = useSelector((state) => state.auth);
-  const { postId, imageUrl } = route.params;
+  const postId = 1;
+  const postImage = require('../../../assets/images/postImg.png');
+  // const { postId, imageUrl } = route.params;
   // const dispatch = useDispatch();
 
   const handleCommentChange = (text) => {
@@ -73,7 +124,7 @@ export default CommentsScreen = ({ route }) => {
     >
       <View style={styles.container}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: imageUrl }} style={styles.image} />
+          <Image source={postImage} style={styles.image} />
         </View>
 
         <SafeAreaView style={styles.containerListComments}>
@@ -83,22 +134,19 @@ export default CommentsScreen = ({ route }) => {
               nickName === item.nickName ? (
                 <View style={styles.containerComment}>
                   <View style={styles.textContainerCommentOwn}>
-                    <Text style={styles.textComment}>{item.comment}</Text>
+                    <Text style={styles.textComment}>{item.text}</Text>
                   </View>
 
-                  <Image
-                    source={{ uri: item.userPhoto }}
-                    style={styles.imageCommentOwn}
-                  />
+                  <Image source={item.avatar} style={styles.imageCommentOwn} />
                 </View>
               ) : (
                 <View style={styles.containerComment}>
                   <Image
-                    source={{ uri: item.userPhoto }}
+                    source={item.avatar}
                     style={styles.imageCommentOther}
                   />
                   <View style={styles.textContainerCommentOther}>
-                    <Text style={styles.textComment}>{item.comment}</Text>
+                    <Text style={styles.textComment}>{item.text}</Text>
                   </View>
                 </View>
               )
@@ -115,7 +163,10 @@ export default CommentsScreen = ({ route }) => {
             onChangeText={handleCommentChange}
             value={comment}
           />
-          <TouchableOpacity style={styles.button} onPress={createPost}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => console.log('fdf')}
+          >
             <View>
               <Feather name="arrow-up" style={styles.arrow} />
             </View>

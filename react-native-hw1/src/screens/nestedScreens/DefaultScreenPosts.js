@@ -14,16 +14,19 @@ import { SimpleLineIcons } from '@expo/vector-icons';
 export default DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([
     {
+      id: 1,
       photo: require('../../../assets/images/postImg.png'),
       photoName: 'Лес',
       photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
     },
     {
+      id: 2,
       photo: require('../../../assets/images/postImg.png'),
       photoName: 'Лес',
       photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
     },
     {
+      id: 3,
       photo: require('../../../assets/images/postImg.png'),
       photoName: 'Лес',
       photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
