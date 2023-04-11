@@ -1,77 +1,71 @@
 import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet,
-  ImageBackground,
-  View,
   TouchableWithoutFeedback,
   Keyboard,
   Text,
 } from 'react-native';
-import RegistrationScreen from './src/Screens/RegistrationScreen';
-import LoginScreen from './src/Screens/LoginScreen';
 import * as SplashScreen from 'expo-splash-screen';
-import { useState, useEffect } from 'react';
-import * as Font from 'expo-font';
 
-const backgroundImage = require('./assets/images/bg_new.png');
+// імпортуємо компонент NavigationContainer та createNativeStackNavigator для роботи з навігацією
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+// імпортуємо екрани (screens)
+// import RegistrationScreen from './src/screens/RegistrationScreen';
+// import LoginScreen from './src/screens/LoginScreen';
+
+// імпортуємо компоненти для роботи зі шрифтами
+import { useState, useEffect } from 'react';
+import { useFonts } from 'expo-font';
+import PostScreen from './src/screens/mainScreen/PostsScreen';
+import ProfileScreen from './src/screens/mainScreen/ProfileScreen';
+import CreateScreen from './src/screens/mainScreen/CreatePostsScreen';
+
+import { useRoute } from './src/route';
+
+// встановлюємо навігацію
+const AuthStack = createNativeStackNavigator();
+const MainTab = createBottomTabNavigator();
 
 export default function App() {
-  const [visibleScreen, setVisibleScreen] = useState('SignIn');
-  const [isReady, setIsReady] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
 
-  const toggleVisibleScreen = (screenName) => {
-    setVisibleScreen(screenName);
-  };
+  const [fontsLoaded] = useFonts({
+    'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
+    'Inter-VariableFont': require('./assets/fonts/Inter-VariableFont.ttf'),
+  });
 
   useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
-        'Inter-VariableFont': require('./assets/fonts/Inter-VariableFont.ttf'),
-      });
-      setIsReady(true);
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
     }
-    loadFonts();
+    prepare();
   }, []);
 
-  if (!isReady) {
-    return null;
+  if (!fontsLoaded) {
+    return undefined;
   } else {
     SplashScreen.hideAsync();
   }
 
+  const route = useRoute(true);
+
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
-      <View style={styles.container}>
-        <ImageBackground source={backgroundImage} style={styles.image}>
-          {visibleScreen === 'SignIn' ? (
-            <RegistrationScreen toggleVisibleScreen={toggleVisibleScreen} />
-          ) : (
-            <LoginScreen toggleVisibleScreen={toggleVisibleScreen} />
-          )}
-        </ImageBackground>
-        <StatusBar style="auto" />
-      </View>
-    </TouchableWithoutFeedback>
+    fontsLoaded && (
+      <NavigationContainer>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss();
+          }}
+        >
+          <>
+            {route}
+            <StatusBar style="auto" />
+          </>
+        </TouchableWithoutFeedback>
+      </NavigationContainer>
+    )
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  image: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    width: '100%',
-  },
-  title: {
-    color: 'red',
-    fontFamily: 'Roboto-Regular',
-  },
-});
