@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     color: '#212121',
+    fontFamily: 'Roboto-Regular',
     fontWeight: 500,
   },
   textMap: {
