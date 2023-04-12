@@ -2,16 +2,9 @@ import {
   View,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Platform,
-  KeyboardAvoidingView,
   ImageBackground,
-  Keyboard,
   Image,
-  Button,
-  Alert,
   FlatList,
 } from 'react-native';
 
@@ -22,21 +15,13 @@ import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 
-import { useEffect, useState } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { useState } from 'react';
 
 import { StatusBar } from 'expo-status-bar';
-import { nanoid } from 'nanoid';
-
-// import { db } from '../../../firebase/config';
-// import { authSignOutUser } from '../../redux/auth/authOperations';
 
 const backgroundImage = require('../../../assets/images/bg_new.png');
 
 export default ProfileScreen = ({ navigation }) => {
-  // const { userId, photo: image, nickName } = useSelector((state) => state.auth);
-
   const [posts, setPosts] = useState([
     {
       photo: require('../../../assets/images/postImg.png'),
@@ -55,9 +40,7 @@ export default ProfileScreen = ({ navigation }) => {
     },
   ]);
   const avatar = require('../../../assets/images/avatar.png');
-  const userId = nanoid(10);
   const nickName = 'Natali Romanova';
-  const deleteIcon = require('../../../assets/images/delete.png');
 
   return (
     <View style={styles.mainContainer}>
@@ -73,14 +56,7 @@ export default ProfileScreen = ({ navigation }) => {
           >
             {!avatar ? (
               <>
-                <Image
-                  source={avatar}
-                  style={{
-                    borderRadius: 15,
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
+                <Image source={avatar} style={styles.avatarBtn} />
 
                 <TouchableOpacity
                   style={styles.addbutton}
@@ -92,14 +68,7 @@ export default ProfileScreen = ({ navigation }) => {
               </>
             ) : (
               <>
-                <Image
-                  source={avatar}
-                  style={{
-                    borderRadius: 15,
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
+                <Image source={avatar} style={styles.avatarBtn} />
 
                 <TouchableOpacity
                   style={styles.addbutton}
@@ -136,35 +105,17 @@ export default ProfileScreen = ({ navigation }) => {
                   source={item.photo}
                   style={{ marginHorizontal: 16, height: 200, borderRadius: 8 }}
                 />
-                <Text
-                  style={{
-                    marginHorizontal: 16,
-                    marginTop: 8,
-                    fontSize: 16,
-                    lineHeight: 19,
-                    color: '#212121',
-                    fontWeight: 500,
-                  }}
-                >
-                  {item.photoName}
-                </Text>
-                <View
-                  style={{
-                    marginTop: 11,
-                    marginHorizontal: 16,
-                    marginBottom: 34,
-                    height: 20,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}
-                >
+                <Text style={styles.textPostName}>{item.photoName}</Text>
+                <View style={styles.conteinerCommentMap}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <FontAwesome5
                       name="comment"
                       size={18}
                       color="#BDBDBD"
                       onPress={() => {
-                        navigation.navigate('CommentsScreen');
+                        navigation.navigate('CommentsScreen', {
+                          postId: item.id,
+                        });
                       }}
                     />
                   </View>
@@ -180,13 +131,7 @@ export default ProfileScreen = ({ navigation }) => {
                           location: item.location,
                         });
                       }}
-                      style={{
-                        marginLeft: 9,
-                        fontSize: 16,
-                        lineHeight: 19,
-                        color: '#212121',
-                        textDecorationLine: 'underline',
-                      }}
+                      style={styles.textMap}
                     >
                       {item.photoLocationName}
                     </Text>
@@ -209,12 +154,39 @@ const styles = StyleSheet.create({
     top: 70,
     left: '90%',
     borderRadius: 50,
-    // backgroundColor: 'white',
-    // opacity: 0.5,
     height: 25,
     width: 25,
     pointerEvents: 'auto',
   },
+  textPostName: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#212121',
+    fontWeight: 500,
+  },
+  textMap: {
+    marginLeft: 9,
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#212121',
+    textDecorationLine: 'underline',
+  },
+  conteinerCommentMap: {
+    marginTop: 11,
+    marginHorizontal: 16,
+    marginBottom: 34,
+    height: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  avatarBtn: {
+    borderRadius: 15,
+    width: '100%',
+    height: '100%',
+  },
+  avatar: {},
   photoConteiner: {
     marginTop: -60,
     left: '50%',
@@ -236,7 +208,6 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    // justifyContent: "center",
     marginHorizontal: 16,
     paddingLeft: 16,
     borderWidth: 1,

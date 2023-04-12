@@ -22,5 +22,3 @@ export const mainContainerStyles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
   },
 });
-
-// export const backgroundImage = require('./assets/images/bg_new.png');

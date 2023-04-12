@@ -1,12 +1,6 @@
 import { View, StyleSheet, Text, FlatList, Image } from 'react-native';
 
-// import { collection, getDocs, query, onSnapshot } from 'firebase/firestore';
-
-import { useState, useEffect } from 'react';
-
-// import { useSelector } from 'react-redux';
-
-// import { db } from '../../../firebase/config';
+import { useState } from 'react';
 
 import { FontAwesome5 } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';

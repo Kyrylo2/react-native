@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,41 +11,13 @@ import {
   SafeAreaView,
   FlatList,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
 
-import { useSelector } from 'react-redux';
-
-// import { doc, collection, addDoc, getDocs } from "firebase/firestore";
 import { Feather } from '@expo/vector-icons';
-// import { db } from '../../../firebase/config';
 
-export default CommentsScreen = ({ route }) => {
-  // const [posts, setPosts] = useState([
-  //   {
-  //     id: 1,
-  //     photo: require('../../../assets/images/postImg.png'),
-  //     photoName: 'Лес',
-  //     photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-  //   },
-  //   {
-  //     id: 2,
-  //     photo: require('../../../assets/images/postImg.png'),
-  //     photoName: 'Лес',
-  //     photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-  //   },
-  //   {
-  //     id: 3,
-  //     photo: require('../../../assets/images/postImg.png'),
-  //     photoName: 'Лес',
-  //     photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-  //   },
-  // ]);
-
-  // const avatar = require('../../../assets/images/avatar.png');
-  // const email = 'email@example.com';
+export default CommentsScreen = () => {
   const nickName = 'Natali Romanova';
   const [comment, setComment] = useState('');
-  // const [sendedComment, setSendedComment] = useState('');
+
   const [allComments, setAllComments] = useState([
     {
       id: 1,
@@ -72,49 +44,13 @@ export default CommentsScreen = ({ route }) => {
       isAuthor: false,
     },
   ]);
-  // const { nickName, photo } = useSelector((state) => state.auth);
+
   const postId = 1;
   const postImage = require('../../../assets/images/postImg.png');
-  // const { postId, imageUrl } = route.params;
-  // const dispatch = useDispatch();
 
   const handleCommentChange = (text) => {
     setComment(text);
   };
-
-  // useEffect(() => {
-  //   getAllPosts();
-  // }, [sendedComment]);
-
-  // const createPost = async () => {
-  //   // const commentsRef = db.collection("posts").document(postId);
-
-  //   const docRef = await doc(db, `posts/${postId}`);
-
-  //   const colRef = await collection(docRef, 'comments');
-  //   addDoc(colRef, {
-  //     comment,
-  //     nickName,
-  //     userPhoto: photo,
-  //   });
-  //   setSendedComment(comment);
-  //   setComment('');
-  //   Keyboard.dismiss();
-  // };
-
-  // const getAllPosts = async () => {
-  //   const querySnapshot = await getDocs(
-  //     collection(db, `posts/${postId}/comments`)
-  //   );
-  //   const allCommentsArray = [];
-
-  //   querySnapshot.forEach((doc) => {
-  //     allCommentsArray.push({ ...doc.data(), id: doc.id });
-  //   });
-  //   setAllComments(allCommentsArray);
-
-  //   console.log('allCommentsArray:', allCommentsArray);
-  // };
 
   return (
     <TouchableWithoutFeedback

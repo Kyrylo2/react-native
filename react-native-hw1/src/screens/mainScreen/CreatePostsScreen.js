@@ -7,28 +7,26 @@ import {
   Image,
 } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react';
-// import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
 
-// import { customAlphabet } from 'nanoid/non-secure';
-
-import { Camera, CameraType } from 'expo-camera';
-
-// import * as Location from 'expo-location';
+import { Camera } from 'expo-camera';
 
 import { SimpleLineIcons } from '@expo/vector-icons';
 
-// import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-// import { doc, setDoc } from 'firebase/firestore';
-
 const CreatePostsScreen = () => {
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
-  const [location, setLocation] = useState(null);
 
   const [photoName, setPhotoName] = useState();
   const [photoLocationName, setPhotoLocationName] = useState();
+
+  const takePhoto = () => {
+    console.log('take photo');
+  };
+
+  const sendPhoto = () => {
+    console.log('send photo');
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -49,41 +47,16 @@ const CreatePostsScreen = () => {
           )}
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => console.log('take photo')}
-            >
-              {/* <TouchableOpacity style={styles.button} onPress={takePhoto}> */}
+            <TouchableOpacity style={styles.button} onPress={takePhoto}>
               <Fontisto name="camera" size={20} color="#BDBDBD" />
             </TouchableOpacity>
           </View>
         </Camera>
       </View>
-      {!photo ? (
-        <Text
-          style={{
-            marginTop: 8,
-            marginLeft: 16,
-            fontSize: 16,
-            lineHeight: 19,
-            color: '#BDBDBD',
-          }}
-        >
-          Загрузите фото
-        </Text>
-      ) : (
-        <Text
-          style={{
-            marginTop: 8,
-            marginLeft: 16,
-            fontSize: 16,
-            lineHeight: 19,
-            color: '#BDBDBD',
-          }}
-        >
-          Редактировать фото
-        </Text>
-      )}
+
+      <Text style={styles.text}>
+        {photo ? 'Редактировать фото' : 'Загрузите фото'}
+      </Text>
 
       <View style={styles.form}>
         <TextInput
@@ -115,8 +88,7 @@ const CreatePostsScreen = () => {
       <TouchableOpacity
         activeOpacity={0.6}
         style={styles.buttonSend}
-        onPress={() => console.log('send photo')}
-        // onPress={sendPhoto}
+        onPress={sendPhoto}
       >
         <Text style={styles.btnTitle}>Опубликовать</Text>
       </TouchableOpacity>
@@ -137,6 +109,14 @@ const styles = StyleSheet.create({
     borderColor: '#BDBDBD',
     borderWidth: 1,
     overflow: 'hidden',
+  },
+
+  text: {
+    marginTop: 8,
+    marginLeft: 16,
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#BDBDBD',
   },
 
   button: {
