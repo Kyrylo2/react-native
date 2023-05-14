@@ -7,25 +7,75 @@ import {
   Image,
 } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
 
 import { SimpleLineIcons } from '@expo/vector-icons';
 
-const CreatePostsScreen = () => {
+const CreatePostsScreen = ({ navigation }) => {
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
+  const [type, setType] = useState(CameraType.back);
   const [photo, setPhoto] = useState(null);
-
-  const [photoName, setPhotoName] = useState();
+  const [photoName, setPhotoName] = useState(null);
   const [photoLocationName, setPhotoLocationName] = useState();
 
-  const takePhoto = () => {
-    console.log('take photo');
+  const [location, setLocation] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      let location = await Location.getCurrentPositionAsync({});
+
+      setLocation(location);
+    })();
+  }, []);
+
+  const setUserLocation = async () => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      console.log(status);
+
+      let location = await Location.getCurrentPositionAsync({});
+
+      setLocation(location);
+    })();
+
+    console.log('Location', location);
+  };
+
+  useEffect(() => {
+    (async () => {
+      const cameraStatus = await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraStatus.status === 'granted');
+    })();
+  }, []);
+
+  if (hasCameraPermission === null) {
+    return <View />;
+  }
+  if (hasCameraPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  const takePhoto = async () => {
+    const photo = await cameraRef.takePictureAsync();
+    setPhoto(photo.uri);
   };
 
   const sendPhoto = () => {
     console.log('send photo');
+    setUserLocation();
+    navigation.navigate('DefaultScreenPosts', {
+      photo,
+      photoName,
+      photoLocationName,
+      location,
+    });
   };
 
   return (
@@ -33,6 +83,7 @@ const CreatePostsScreen = () => {
       <View style={styles.cameraContainer}>
         <Camera
           style={styles.camera}
+          type={type}
           ref={(ref) => {
             setCameraRef(ref);
           }}
@@ -41,7 +92,7 @@ const CreatePostsScreen = () => {
             <View style={styles.takePhotoContainer}>
               <Image
                 source={{ uri: photo }}
-                style={{ height: '100%', width: '100%' }}
+                style={{ height: '100%', width: '100%', borderRadius: 8 }}
               />
             </View>
           )}
@@ -159,7 +210,7 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderWidth: 2,
     borderRadius: 8,
-    backgroundColor: 'pink',
+    backgroundColor: 'white',
   },
 
   form: { marginTop: 32 },

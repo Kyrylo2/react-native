@@ -1,38 +1,43 @@
 import { View, StyleSheet, Text, FlatList, Image } from 'react-native';
+import { nanoid } from 'nanoid';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { FontAwesome5 } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 
 export default DefaultScreenPosts = ({ route, navigation }) => {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      photo: require('../../../assets/images/postImg.png'),
-      photoName: 'Лес',
-      photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-    },
-    {
-      id: 2,
-      photo: require('../../../assets/images/postImg.png'),
-      photoName: 'Лес',
-      photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-    },
-    {
-      id: 3,
-      photo: require('../../../assets/images/postImg.png'),
-      photoName: 'Лес',
-      photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-    },
-  ]);
+  console.log(route.params);
+  const [posts, setPosts] = useState([]);
+  console.log(posts);
+
+  // {
+  //   photo: require('../../../assets/images/postImg.png'),
+  //   photoName: 'Лес',
+  //   photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
+  // },
+  // {
+  //   photo: require('../../../assets/images/postImg.png'),
+  //   photoName: 'Лес',
+  //   photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
+  // },
+
   const avatar = require('../../../assets/images/avatar.png');
   const email = 'email@example.com';
   const nickName = 'Natali Romanova';
 
+  useEffect(() => {
+    console.log(route.params);
+    if (route.params) {
+      setPosts((prevState) => [...prevState, route.params]);
+    }
+  }, [route.params]);
+
+  console.log(posts);
+
   return (
     <View style={styles.mainContainer}>
-      {posts.length > 0 && (
+      {posts.length > 0 ? (
         <View
           style={{
             marginHorizontal: 16,
@@ -50,13 +55,7 @@ export default DefaultScreenPosts = ({ route, navigation }) => {
               overflow: 'hidden',
             }}
           >
-            <Image
-              source={avatar}
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-            />
+            <Image source={avatar} style={{ width: '100%', height: '100%' }} />
           </View>
           <View style={{ marginLeft: 8, justifyContent: 'center' }}>
             <Text
@@ -82,6 +81,8 @@ export default DefaultScreenPosts = ({ route, navigation }) => {
             </Text>
           </View>
         </View>
+      ) : (
+        <Text>No posts</Text>
       )}
 
       <FlatList
@@ -89,7 +90,7 @@ export default DefaultScreenPosts = ({ route, navigation }) => {
         renderItem={({ item }) => (
           <View>
             <Image
-              source={item.photo}
+              source={{ uri: item.photo }}
               style={{ marginHorizontal: 16, height: 200, borderRadius: 8 }}
             />
             <Text
@@ -135,6 +136,7 @@ export default DefaultScreenPosts = ({ route, navigation }) => {
                 />
                 <Text
                   onPress={() => {
+                    console.log('location-pin');
                     navigation.navigate('MapScreen', {
                       location: item.location,
                     });

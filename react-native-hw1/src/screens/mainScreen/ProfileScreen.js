@@ -103,7 +103,12 @@ export default ProfileScreen = ({ navigation }) => {
               <View>
                 <Image
                   source={item.photo}
-                  style={{ marginHorizontal: 16, height: 200, borderRadius: 8 }}
+                  style={{
+                    marginHorizontal: 16,
+                    minHeight: 200,
+                    width: 'auto',
+                    borderRadius: 8,
+                  }}
                 />
                 <Text style={styles.textPostName}>{item.photoName}</Text>
                 <View style={styles.conteinerCommentMap}>
