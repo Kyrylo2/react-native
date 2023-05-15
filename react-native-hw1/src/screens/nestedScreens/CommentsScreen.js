@@ -14,7 +14,9 @@ import {
 
 import { Feather } from '@expo/vector-icons';
 
-export default CommentsScreen = () => {
+export default CommentsScreen = ({ route }) => {
+  const { imageUrl, postId } = route.params;
+  console.log(imageUrl, postId);
   const nickName = 'Natali Romanova';
   const [comment, setComment] = useState('');
 
@@ -45,7 +47,7 @@ export default CommentsScreen = () => {
     },
   ]);
 
-  const postId = 1;
+  // const postId = 1;
   const postImage = require('../../../assets/images/postImg.png');
 
   const handleCommentChange = (text) => {
@@ -60,7 +62,7 @@ export default CommentsScreen = () => {
     >
       <View style={styles.container}>
         <View style={styles.imageContainer}>
-          <Image source={postImage} style={styles.image} />
+          <Image source={{ uri: imageUrl }} style={styles.image} />
         </View>
 
         <SafeAreaView style={styles.containerListComments}>
