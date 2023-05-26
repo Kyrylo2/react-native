@@ -1,13 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
-
-import { NavigationContainer } from '@react-navigation/native';
-
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
-
-import { useRoute } from './src/route';
+import { Provider } from 'react-redux';
+import { store } from './src/redux/store';
+import { Main } from './src/components/main';
 
 export default function App() {
   // const [isReady, setIsReady] = useState(false);
@@ -30,22 +26,11 @@ export default function App() {
     SplashScreen.hideAsync();
   }
 
-  const route = useRoute(true);
-
   return (
     fontsLoaded && (
-      <NavigationContainer>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            Keyboard.dismiss();
-          }}
-        >
-          <>
-            {route}
-            <StatusBar style="auto" />
-          </>
-        </TouchableWithoutFeedback>
-      </NavigationContainer>
+      <Provider store={store}>
+        <Main />
+      </Provider>
     )
   );
 }

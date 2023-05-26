@@ -6,34 +6,34 @@ import { useEffect, useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 
-export default DefaultScreenPosts = ({ route, navigation }) => {
-  console.log(route.params);
-  const [posts, setPosts] = useState([]);
-  console.log(posts);
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../../firebase/config';
+import { useSelector } from 'react-redux';
 
-  // {
-  //   photo: require('../../../assets/images/postImg.png'),
-  //   photoName: 'Лес',
-  //   photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-  // },
-  // {
-  //   photo: require('../../../assets/images/postImg.png'),
-  //   photoName: 'Лес',
-  //   photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-  // },
+export default DefaultScreenPosts = ({ route, navigation }) => {
+  const [posts, setPosts] = useState([]);
+
+  const { nickName, email } = useSelector((state) => state.auth);
 
   const avatar = require('../../../assets/images/avatar.png');
-  const email = 'email@example.com';
-  const nickName = 'Natali Romanova';
+  // const email = email;
+  // const nickName = 'Natali Romanova';
+
+  const getAllPosts = async () => {
+    const querySnapshot = await getDocs(collection(db, 'posts'));
+
+    const postsFromDB = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    setPosts(postsFromDB);
+  };
 
   useEffect(() => {
-    console.log(route.params);
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
-
-  console.log(posts);
+    console.log('Use Effect Default Screen Post');
+    getAllPosts();
+    console.log(posts);
+  }, []);
 
   return (
     <View style={styles.mainContainer}>
@@ -139,6 +139,7 @@ export default DefaultScreenPosts = ({ route, navigation }) => {
                     console.log('location-pin');
                     navigation.navigate('MapScreen', {
                       location: item.location,
+                      photoName: item.photoName,
                     });
                   }}
                   style={{

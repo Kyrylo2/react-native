@@ -5,10 +5,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DefaultScreenPosts from '../nestedScreens/DefaultScreenPosts';
 import MapScreen from '../nestedScreens/MapScreen';
 import CommentsScreen from '../nestedScreens/CommentsScreen';
+import { useDispatch } from 'react-redux';
+import { authSignOutUser } from '../../redux/auth/authOperations';
 
 const NestedScreen = createNativeStackNavigator();
 
 export default function PostScreen() {
+  const dispatch = useDispatch();
   return (
     <NestedScreen.Navigator>
       <NestedScreen.Screen
@@ -18,7 +21,7 @@ export default function PostScreen() {
               name="logout"
               size={24}
               color="black"
-              onPress={() => console.log('Logged out')}
+              onPress={() => dispatch(authSignOutUser())}
             />
           ),
           title: 'Публикации',

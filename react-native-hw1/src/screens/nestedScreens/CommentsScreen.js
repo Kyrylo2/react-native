@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,46 +13,56 @@ import {
 } from 'react-native';
 
 import { Feather } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { db } from '../../../firebase/config';
+import { addDoc, collection, doc, getDocs } from 'firebase/firestore';
 
 export default CommentsScreen = ({ route }) => {
   const { imageUrl, postId } = route.params;
   console.log(imageUrl, postId);
-  const nickName = 'Natali Romanova';
-  const [comment, setComment] = useState('');
+  const { nickName } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-  const [allComments, setAllComments] = useState([
-    {
-      id: 1,
-      nickName: 'John',
-      avatar: require('../../../assets/images/postImg.png'),
-      text: 'Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!',
-      date: '09 июня, 2020 | 08:40',
-      isAuthor: false,
-    },
-    {
-      id: 2,
-      nickName: 'Natali Romanova',
-      avatar: require('../../../assets/images/avatar.png'),
-      text: 'A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.',
-      date: '09 июня, 2020 | 09:14',
-      isAuthor: true,
-    },
-    {
-      id: 3,
-      nickName: 'John',
-      avatar: require('../../../assets/images/postImg.png'),
-      text: 'Thank you! That was very helpful!',
-      date: '09 июня, 2020 | 09:20',
-      isAuthor: false,
-    },
-  ]);
+  const [comment, setComment] = useState('');
+  const [sendedComment, setSendedComment] = useState('');
+  const [allComments, setAllComments] = useState([]);
+
+  const createPost = async () => {
+    const docRef = await doc(db, `posts/${postId}`);
+
+    const colRef = await collection(docRef, 'comments');
+    addDoc(colRef, {
+      comment,
+      nickName,
+
+      // userPhoto: photo,
+    });
+    setSendedComment(comment);
+    setComment('');
+    Keyboard.dismiss();
+  };
+
+  const getAllPosts = async () => {
+    const querySnapshot = await getDocs(
+      collection(db, `posts/${postId}/comments`)
+    );
+    const allCommentsArray = [];
+
+    querySnapshot.forEach((doc) => {
+      allCommentsArray.push({ ...doc.data(), id: doc.id });
+    });
+    setAllComments(allCommentsArray);
+
+    console.log('allCommentsArray:', allCommentsArray);
+  };
+
+  useEffect(() => {
+    getAllPosts();
+  }, [sendedComment]);
 
   // const postId = 1;
-  const postImage = require('../../../assets/images/postImg.png');
-
-  const handleCommentChange = (text) => {
-    setComment(text);
-  };
+  // const postImage = require('../../../assets/images/postImg.png');
+  const avatar = require('../../../assets/images/avatar.png');
 
   return (
     <TouchableWithoutFeedback
@@ -72,7 +82,7 @@ export default CommentsScreen = ({ route }) => {
               nickName === item.nickName ? (
                 <View style={styles.containerComment}>
                   <View style={styles.textContainerCommentOwn}>
-                    <Text style={styles.textComment}>{item.text}</Text>
+                    <Text style={styles.textComment}>{item.comment}</Text>
                   </View>
 
                   <Image source={item.avatar} style={styles.imageCommentOwn} />
@@ -84,7 +94,7 @@ export default CommentsScreen = ({ route }) => {
                     style={styles.imageCommentOther}
                   />
                   <View style={styles.textContainerCommentOther}>
-                    <Text style={styles.textComment}>{item.text}</Text>
+                    <Text style={styles.textComment}>{item.comment}</Text>
                   </View>
                 </View>
               )
@@ -92,19 +102,17 @@ export default CommentsScreen = ({ route }) => {
             keyExtractor={(item) => item.id}
           />
         </SafeAreaView>
+
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             multiline={true}
             placeholder="Комментировать..."
             placeholderTextColor="#BDBDBD"
-            onChangeText={handleCommentChange}
+            onChangeText={setComment}
             value={comment}
           />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => console.log('fdf')}
-          >
+          <TouchableOpacity style={styles.button} onPress={createPost}>
             <View>
               <Feather name="arrow-up" style={styles.arrow} />
             </View>
