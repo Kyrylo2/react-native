@@ -14,6 +14,17 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
 
 import { SimpleLineIcons } from '@expo/vector-icons';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+import { doc, setDoc } from 'firebase/firestore';
+
+import { db } from '../../../firebase/config';
+import { useSelector } from 'react-redux';
+
+const storage = getStorage();
+const metadata = {
+  contentType: 'image/jpeg',
+};
 
 const CreatePostsScreen = ({ navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -24,6 +35,8 @@ const CreatePostsScreen = ({ navigation }) => {
   const [photoLocationName, setPhotoLocationName] = useState();
 
   const [location, setLocation] = useState(null);
+  const { userId, nickName } = useSelector((state) => state.auth);
+  // console.log(store);
 
   useEffect(() => {
     (async () => {
@@ -65,17 +78,74 @@ const CreatePostsScreen = ({ navigation }) => {
   const takePhoto = async () => {
     const photo = await cameraRef.takePictureAsync();
     setPhoto(photo.uri);
+    console.log(photo);
   };
 
-  const sendPhoto = () => {
+  const sendPhoto = async () => {
     console.log('send photo');
+    await uploadPostToServer().then(() =>
+      console.log('Photo taken successfully and uploaded')
+    );
     setUserLocation();
-    navigation.navigate('DefaultScreenPosts', {
-      photo,
-      photoName,
-      photoLocationName,
-      location,
-    });
+    navigation.navigate('DefaultScreenPosts');
+    // {
+    //   photo,
+    //   photoName,
+    //   photoLocationName,
+    //   location,
+    // }
+  };
+
+  const uploadPostToServer = async () => {
+    try {
+      const photoUrl = await uploadPhotoToServer();
+      console.log('95 -----', photoUrl);
+      const postId = Date.now().toString();
+      console.log(
+        photoUrl,
+        photoName,
+        photoLocationName,
+        location.coords,
+        userId,
+        nickName
+      );
+      await setDoc(doc(db, 'posts', postId), {
+        photoUrl,
+        photoName,
+        photoLocationName,
+        location: location.coords,
+        userId,
+        nickName,
+      });
+      // console.log('Document written with ID: ', docRef.id);
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
+  };
+
+  const uploadPhotoToServer = async () => {
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      console.log('File: ', file);
+      const uniquePhotoId = Date.now().toString();
+      const storageRef = ref(storage, `/postImages/${uniquePhotoId}`);
+
+      let photoUrl;
+      const snapshot = await uploadBytes(storageRef, file, metadata);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      photoUrl = downloadURL;
+      console.log('Download link to your image: ', downloadURL);
+
+      console.log(snapshot);
+      console.log('Uploaded a blob or file!');
+
+      // console.log('128----- ', photoUrl);
+
+      return photoUrl;
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+    }
   };
 
   return (

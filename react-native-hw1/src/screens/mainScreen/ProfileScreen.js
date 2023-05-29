@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,40 +8,62 @@ import {
   Image,
   FlatList,
 } from 'react-native';
-
-import { MaterialIcons } from '@expo/vector-icons';
-
-import { AntDesign } from '@expo/vector-icons';
-
-import { FontAwesome5 } from '@expo/vector-icons';
-import { SimpleLineIcons } from '@expo/vector-icons';
-
-import { useState } from 'react';
-
+import {
+  MaterialIcons,
+  AntDesign,
+  FontAwesome5,
+  SimpleLineIcons,
+} from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../../../firebase/config';
+import { authSignOutUser } from '../../redux/auth/authOperations';
 
 const backgroundImage = require('../../../assets/images/bg_new.png');
+const avatarImage = require('../../../assets/images/avatar.png');
 
-export default ProfileScreen = ({ navigation }) => {
-  const [posts, setPosts] = useState([
-    {
-      photo: require('../../../assets/images/postImg.png'),
-      photoName: 'Лес',
-      photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-    },
-    {
-      photo: require('../../../assets/images/postImg.png'),
-      photoName: 'Лес',
-      photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-    },
-    {
-      photo: require('../../../assets/images/postImg.png'),
-      photoName: 'Лес',
-      photoLocationName: `Ivano-Frankivs'k Region, Ukraine`,
-    },
-  ]);
-  const avatar = require('../../../assets/images/avatar.png');
-  const nickName = 'Natali Romanova';
+const ProfileScreen = ({ navigation }) => {
+  const [posts, setPosts] = useState([]);
+  const { nickName, email } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const getUserPosts = async () => {
+    const q = await query(
+      collection(db, 'posts'),
+      where('userId', '==', userId)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        posts.push(doc.data());
+      });
+      console.log('Current posts: ', posts);
+      setPosts(posts);
+    });
+  };
+
+  useEffect(() => {
+    getUserPosts();
+  }, []);
+
+  // const getAllPosts = async () => {
+  //   const querySnapshot = await getDocs(collection(db, 'posts'));
+  //   const postsFromDB = querySnapshot.docs.map((doc) => ({
+  //     ...doc.data(),
+  //     id: doc.id,
+  //   }));
+  //   console.log('postsFromDB', postsFromDB);
+  //   setPosts(postsFromDB);
+  // };
+
+  // useEffect(() => {
+  //   console.log('Use Effect Default Screen Post');
+  //   getAllPosts();
+  //   console.log(posts);
+  // }, []);
 
   return (
     <View style={styles.mainContainer}>
@@ -48,18 +71,18 @@ export default ProfileScreen = ({ navigation }) => {
         <View style={styles.form}>
           <View
             style={[
-              styles.photoConteiner,
+              styles.photoContainer,
               {
                 transform: [{ translateX: -60 }],
               },
             ]}
           >
-            {!avatar ? (
+            {!avatarImage ? (
               <>
-                <Image source={avatar} style={styles.avatarBtn} />
+                <Image source={avatarImage} style={styles.avatarBtn} />
 
                 <TouchableOpacity
-                  style={styles.addbutton}
+                  style={styles.addButton}
                   activeOpacity={1}
                   onPress={null}
                 >
@@ -68,10 +91,10 @@ export default ProfileScreen = ({ navigation }) => {
               </>
             ) : (
               <>
-                <Image source={avatar} style={styles.avatarBtn} />
+                <Image source={avatarImage} style={styles.avatarBtn} />
 
                 <TouchableOpacity
-                  style={styles.addbutton}
+                  style={styles.addButton}
                   activeOpacity={1}
                   onPress={null}
                 >
@@ -92,7 +115,7 @@ export default ProfileScreen = ({ navigation }) => {
             size={24}
             color="#BDBDBD"
             style={{ position: 'absolute', top: 24, right: 16 }}
-            onPress={() => console.log('Logged out')}
+            onPress={() => dispatch(authSignOutUser())}
           />
           <View style={{ alignItems: 'center' }}>
             <Text style={styles.title}>{nickName}</Text>
@@ -102,7 +125,7 @@ export default ProfileScreen = ({ navigation }) => {
             renderItem={({ item }) => (
               <View>
                 <Image
-                  source={item.photo}
+                  source={{ uri: item.photo }}
                   style={{
                     marginHorizontal: 16,
                     minHeight: 200,
@@ -111,7 +134,7 @@ export default ProfileScreen = ({ navigation }) => {
                   }}
                 />
                 <Text style={styles.textPostName}>{item.photoName}</Text>
-                <View style={styles.conteinerCommentMap}>
+                <View style={styles.containerCommentMap}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <FontAwesome5
                       name="comment"
@@ -120,6 +143,7 @@ export default ProfileScreen = ({ navigation }) => {
                       onPress={() => {
                         navigation.navigate('CommentsScreen', {
                           postId: item.id,
+                          imageUrl: item.photo,
                         });
                       }}
                     />
@@ -134,6 +158,7 @@ export default ProfileScreen = ({ navigation }) => {
                       onPress={() => {
                         navigation.navigate('MapScreen', {
                           location: item.location,
+                          photoName: item.photoName,
                         });
                       }}
                       style={styles.textMap}
@@ -154,7 +179,7 @@ export default ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  addbutton: {
+  addButton: {
     position: 'absolute',
     top: 70,
     left: '90%',
@@ -170,7 +195,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: '#212121',
     fontFamily: 'Roboto-Regular',
-    fontWeight: 500,
+    fontWeight: '500',
   },
   textMap: {
     marginLeft: 9,
@@ -179,7 +204,7 @@ const styles = StyleSheet.create({
     color: '#212121',
     textDecorationLine: 'underline',
   },
-  conteinerCommentMap: {
+  containerCommentMap: {
     marginTop: 11,
     marginHorizontal: 16,
     marginBottom: 34,
@@ -193,10 +218,9 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatar: {},
-  photoConteiner: {
+  photoContainer: {
     marginTop: -60,
     left: '50%',
-
     height: 120,
     width: 120,
     backgroundColor: '#F6F6F6',
@@ -212,7 +236,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     width: '100%',
   },
-
   input: {
     marginHorizontal: 16,
     paddingLeft: 16,
@@ -228,7 +251,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-
     backgroundColor: '#FFFFFF',
     height: 650,
   },
@@ -239,7 +261,6 @@ const styles = StyleSheet.create({
     marginTop: 32,
     fontFamily: 'Roboto-Regular',
     fontSize: 30,
-    // fontWeight: 500,
     justifyContent: 'center',
   },
   button: {
@@ -270,3 +291,5 @@ const styles = StyleSheet.create({
     color: '#1B4371',
   },
 });
+
+export default ProfileScreen;
